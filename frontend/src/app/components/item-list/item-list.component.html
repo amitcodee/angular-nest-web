@@ -1,0 +1,12 @@
+<h2>Create New Item</h2>
+<form [formGroup]="itemForm" (ngSubmit)="createItem()">
+  <div>
+    <label for="name">Name:</label>
+    <input id="name" formControlName="name" placeholder="Enter item name" />
+  </div>
+  <div>
+    <label for="description">Description:</label>
+    <input id="description" formControlName="description" placeholder="Enter item description" />
+  </div>
+  <button type="submit" [disabled]="itemForm.invalid">Add Item</button>
+</form>
