@@ -1,39 +1,41 @@
 /* eslint-disable prettier/prettier */
 // src/items/items.service.ts
 import { Injectable } from '@nestjs/common';
-import { Item } from './item.model';
-import { v4 as uuid } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Item } from './item.entity';
 
 @Injectable()
 export class ItemsService {
-  private items: Item[] = [];
+  constructor(
+    @InjectRepository(Item)
+    private readonly itemRepository: Repository<Item>,
+  ) {}
 
-  getAllItems(): Item[] {
-    return this.items;
+  async getAllItems(): Promise<Item[]> {
+    return this.itemRepository.find();
   }
 
-  getItemById(id: string): Item {
-    return this.items.find(item => item.id === id);
+  async getItemById(id: string): Promise<Item> {
+    return this.itemRepository.findOneBy({ id });
   }
 
-  createItem(name: string, description: string): Item {
-    const item: Item = { id: uuid(), name, description };
-    this.items.push(item);
-    return item;
+  async createItem(name: string, description: string): Promise<Item> {
+    const item = this.itemRepository.create({ name, description });
+    return this.itemRepository.save(item);
   }
 
-  // src/items/items.service.ts
-updateItem(id: string, name: string, description: string): Item {
-  const item = this.getItemById(id);
-  if (item) {
-    item.name = name;
-    item.description = description;
+  async updateItem(id: string, name: string, description: string): Promise<Item> {
+    const item = await this.getItemById(id);
+    if (item) {
+      item.name = name;
+      item.description = description;
+      return this.itemRepository.save(item);
+    }
+    return null;
   }
-  return item;
-}
 
-
-  deleteItem(id: string): void {
-    this.items = this.items.filter(item => item.id !== id);
+  async deleteItem(id: string): Promise<void> {
+    await this.itemRepository.delete(id);
   }
 }

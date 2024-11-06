@@ -2,39 +2,41 @@
 // src/items/items.controller.ts
 import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
 import { ItemsService } from './items.service';
-import { Item } from './item.model';
+import { Item } from './item.entity';
 
 @Controller('items')
 export class ItemsController {
-  constructor(private itemsService: ItemsService) {}
+  constructor(private readonly itemsService: ItemsService) {}
 
   @Get()
-  getAllItems(): Item[] {
-    return this.itemsService.getAllItems();
+  async getAllItems(): Promise<Item[]> {  // Return type as Promise<Item[]>
+    return await this.itemsService.getAllItems();
   }
 
   @Get(':id')
-  getItemById(@Param('id') id: string): Item {
-    return this.itemsService.getItemById(id);
+  async getItemById(@Param('id') id: string): Promise<Item> {  // Return type as Promise<Item>
+    return await this.itemsService.getItemById(id);
   }
 
   @Post()
-  createItem(@Body('name') name: string, @Body('description') description: string): Item {
-    return this.itemsService.createItem(name, description);
+  async createItem(
+    @Body('name') name: string,
+    @Body('description') description: string,
+  ): Promise<Item> {  // Return type as Promise<Item>
+    return await this.itemsService.createItem(name, description);
   }
-// src/items/items.controller.ts
-@Patch(':id')
-updateItem(
-  @Param('id') id: string,
-  @Body('name') name: string,
-  @Body('description') description: string
-): Item {
-  return this.itemsService.updateItem(id, name, description);
-}
 
+  @Patch(':id')
+  async updateItem(
+    @Param('id') id: string,
+    @Body('name') name: string,
+    @Body('description') description: string,
+  ): Promise<Item> {  // Return type as Promise<Item>
+    return await this.itemsService.updateItem(id, name, description);
+  }
 
   @Delete(':id')
-  deleteItem(@Param('id') id: string): void {
-    this.itemsService.deleteItem(id);
+  async deleteItem(@Param('id') id: string): Promise<void> {  // Return type as Promise<void>
+    await this.itemsService.deleteItem(id);
   }
 }
