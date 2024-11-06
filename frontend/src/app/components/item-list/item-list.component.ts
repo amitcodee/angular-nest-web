@@ -12,7 +12,10 @@ import { HttpClientModule } from '@angular/common/http';
   styleUrl: './item-list.component.css'
 })
 export class ItemListComponent {
+  items: any[] = [];
   itemForm!: FormGroup;
+  editMode: boolean = false;
+  editItemId: string | null = null;
 
   constructor(
     private itemService: ItemService,
@@ -20,7 +23,12 @@ export class ItemListComponent {
   ) {}
 
   ngOnInit(): void {
+    this.loadItems();
     this.initializeForm();
+  }
+
+  loadItems() {
+    this.itemService.getAllItems().subscribe((items) => (this.items = items));
   }
 
   initializeForm() {
@@ -30,19 +38,39 @@ export class ItemListComponent {
     });
   }
 
-  createItem() {
+  createOrUpdateItem() {
     const { name, description } = this.itemForm.value;
-    this.itemService.createItem(name, description).subscribe(() => {
-      this.itemForm.reset();
+    if (this.editMode && this.editItemId) {
+      // Update item
+      this.itemService.updateItem(this.editItemId, name, description).subscribe(() => {
+        this.loadItems();
+        this.cancelEdit();
+      });
+    } else {
+      // Create new item
+      this.itemService.createItem(name, description).subscribe(() => {
+        this.loadItems();
+        this.itemForm.reset();
+      });
+    }
+  }
+
+  enableEditMode(item: any) {
+    this.editMode = true;
+    this.editItemId = item.id;
+    this.itemForm.patchValue({
+      name: item.name,
+      description: item.description,
     });
+  }
+
+  cancelEdit() {
+    this.editMode = false;
+    this.editItemId = null;
+    this.itemForm.reset();
   }
 
   deleteItem(id: string) {
     this.itemService.deleteItem(id).subscribe(() => this.loadItems());
   }
-
-  loadItems() {
-    // Implementation for loading items
-  }
-
 }

@@ -1,12 +1,29 @@
-<h2>Create New Item</h2>
-<form [formGroup]="itemForm" (ngSubmit)="createItem()">
+<h2 *ngIf="!editMode">Create New Item</h2>
+<h2 *ngIf="editMode">Edit Item</h2>
+
+<form [formGroup]="itemForm" (ngSubmit)="createOrUpdateItem()">
   <div>
     <label for="name">Name:</label>
     <input id="name" formControlName="name" placeholder="Enter item name" />
   </div>
   <div>
     <label for="description">Description:</label>
-    <input id="description" formControlName="description" placeholder="Enter item description" />
+    <input
+      id="description"
+      formControlName="description"
+      placeholder="Enter item description"
+    />
   </div>
-  <button type="submit" [disabled]="itemForm.invalid">Add Item</button>
+  <button type="submit" [disabled]="itemForm.invalid">
+    {{ editMode ? 'Update Item' : 'Add Item' }}
+  </button>
+  <button type="button" *ngIf="editMode" (click)="cancelEdit()">Cancel</button>
 </form>
+
+<h2>Items List</h2>
+<div *ngFor="let item of items">
+  <h3>{{ item.name }}</h3>
+  <p>{{ item.description }}</p>
+  <button (click)="enableEditMode(item)">Edit</button>
+  <button (click)="deleteItem(item.id)">Delete</button>
+</div>

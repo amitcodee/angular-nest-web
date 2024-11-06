@@ -23,11 +23,13 @@ export class ItemService {
     return this.http.post(this.apiUrl, { name, description });
   }
 
-  updateItem(id: string, name: string, description: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}`, { name, description });
-  }
+// src/app/services/item.service.ts
+updateItem(id: string, name: string, description: string): Observable<any> {
+  return this.http.patch(`${this.apiUrl}/${id}`, { name, description });
+}
 
-  deleteItem(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
+deleteItem(id: string): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/${id}`);
+}
+
 }
